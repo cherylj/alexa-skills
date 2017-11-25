@@ -39,6 +39,7 @@ var newSessionHandlers = {
 
 exports.handler = function(event, context){
     var alexa = Alexa.handler(event, context);
+    alexa.appId = 'amzn1.ask.skill.f72a7250-b9c2-445d-aef4-2c5a5e6e0cdd';
     alexa.registerHandlers(newSessionHandlers, guessModeHandlers, newGameHandlers, giveARangeModeHandlers);
     alexa.execute();
 };

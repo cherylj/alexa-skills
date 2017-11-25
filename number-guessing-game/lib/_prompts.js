@@ -18,8 +18,7 @@ const goodByes = [
     'Bye bye!',
     'Come back soon, I\'ve got lots more numbers for you to guess',
     'Going so soon?  I\'ll miss you!',
-    'So long and thanks for all the fish.',
-    'I\'ve had fun.<break strength="strong"/> This has been good.'
+    'I\'ve had fun, let\'s play again soon!'
 ];
 
 const getRandomGoodbye = () => {
@@ -29,14 +28,14 @@ const getRandomGoodbye = () => {
 const greetings = [
     '<say-as interpret-as="interjection">ahoy</say-as>',
     '<say-as interpret-as="interjection">bonjour</say-as>',
-    'It\'s time to guess some numbers!  <break strength="strong"/> <say-as interpret-as="interjection">dynomite</say-as>',
+    'It\'s time to guess some secret numbers!  <break strength="strong"/> <say-as interpret-as="interjection">dynomite</say-as>',
     '<say-as interpret-as="interjection">howdy</say-as>',
     '<say-as interpret-as="interjection">hurray</say-as> <break strength="strong"/> I\'m glad you\'re here!',
-    '<say-as interpret-as="interjection">oh snap</say-as><break strength="strong"/>  It\'s number guessing time',
-    '<say-as interpret-as="interjection">wahoo</say-as><break strength="strong"/> let\'s guess some numbers.',
+    '<say-as interpret-as="interjection">oh snap</say-as><break strength="strong"/>  It\'s secret number guessing time',
+    '<say-as interpret-as="interjection">wahoo</say-as><break strength="strong"/> let\'s guess some secret numbers.',
     'Welcome!',
-    'Welcome to the number guessing game!',
-    'It\'s the number guessing game!  <break strength="strong"/><say-as interpret-as="interjection">yay</say-as>',
+    'Welcome to Secret Numbers!',
+    'It\'s Secret Numbers!  <say-as interpret-as="interjection">yay</say-as>',
     '<say-as interpret-as="interjection">yippie</say-as><break strength="strong"/> I\'ve been wanting to play all day!'
 ];
 
@@ -44,4 +43,50 @@ const getRandomGreeting = () => {
     return greetings[Math.floor(Math.random() * greetings.length)];
 };
 
-module.exports = { prompts, getRandomGoodbye, getRandomGreeting };
+const oopsies = [
+    '<say-as interpret-as="interjection">ruh roh.</say-as>',
+    '<say-as interpret-as="interjection">wah wah.</say-as>',
+    '<say-as interpret-as="interjection">uh oh</say-as>.',
+    '<say-as interpret-as="interjection">blast</say-as>.',
+    '<say-as interpret-as="interjection">blarg</say-as>.',
+    '<say-as interpret-as="interjection">argh</say-as>.',
+    'wait,',
+    'hold on,'
+];
+
+const getRandomOops = () => {
+    return oopsies[Math.floor(Math.random() * oopsies.length)];
+};
+
+const yays = [
+    '<say-as interpret-as="interjection">yay</say-as>.',
+    'Awesome!',
+    'Cool!',
+    'Sweet!',
+    '<say-as interpret-as="interjection">yippee</say-as>.',
+    '<say-as interpret-as="interjection">woo hoo</say-as>.',
+    '<say-as interpret-as="interjection">wahoo</say-as>.',
+    '<say-as interpret-as="interjection">hurray</say-as>.',
+    '<say-as interpret-as="interjection">dynomite</say-as>.',
+    '<say-as interpret-as="interjection">boom</say-as>.'
+];
+
+const getRandomYay = () => {
+    return yays[Math.floor(Math.random() * yays.length)];
+};
+
+const goodJobs = [
+    '<say-as interpret-as="interjection">well done</say-as>.',
+    '<say-as interpret-as="interjection">way to go</say-as>.',
+    '<say-as interpret-as="interjection">hurray</say-as>.',
+    '<say-as interpret-as="interjection">bravo</say-as>.',
+    'Great job.',
+    'Good guessing!',
+    'Excellent job!'
+];
+
+const getRandomGoodJob = () => {
+    return goodJobs[Math.floor(Math.random() * goodJobs.length)];
+};
+
+module.exports = { prompts, getRandomGoodbye, getRandomGreeting, getRandomOops, getRandomYay, getRandomGoodJob };

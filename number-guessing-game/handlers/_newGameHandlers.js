@@ -36,12 +36,12 @@ module.exports = Alexa.CreateStateHandler(c.states.NEWGAMEMODE, {
             return;
         }
 
-        this.handler.state = c.states.MYGUESSMODE;
         if (first === second) {
-            this.emit(':ask', 'It\'s ' + first + '!');
-            // FIX THIS TO PROMPT TO START A NEW GAME
+            this.emit(':ask', 'It\'s ' + first + '!, Give me another range if you\'d like to play again!');
             return;
         }
+
+        this.handler.state = c.states.MYGUESSMODE;
         if (first < second) {
             this.attributes['rangeLow'] = first;
             this.attributes['rangeHigh'] = second;
@@ -58,26 +58,8 @@ module.exports = Alexa.CreateStateHandler(c.states.NEWGAMEMODE, {
         this.emit(':ask', 'Okay, a number between ' + this.attributes['rangeLow'] + ' and ' + this.attributes['rangeHigh'] + '.  My guess is ' + this.attributes['myGuess'],
             this.attributes['lastPrompt'][0]);
     },
-    'YESINTENT': function() {
-        if (this.attributes['startGameAsGuesser']) {
-            this.attributes['startGameAsGuesser'] = undefined;
-            this.emitWithState('STARTGAMEASGUESSER');
-            return;
-        }
-
-        if (this.attributes['giveRange']) {
-            this.attributes['giveRange'] = undefined;
-            this.emitWithState('GIVEARANGE');
-            return;
-        }
-        this.emitWithState('Unhandled');
-    },
-    'NOINTENT': function() {
-        this.emit(':tell', p.getRandomGoodbye());
-    },
     'AMAZON.HelpIntent': function() {
-        // output info about current state of game
-        // or tell users they can 'start again'
+        this.emit(':ask', p.prompts.helpText);
     },
     'Unhandled': function() {
         if (Array.isArray(this.attributes['lastPrompt'])) {
