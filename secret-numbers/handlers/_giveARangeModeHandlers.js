@@ -65,6 +65,10 @@ module.exports = Alexa.CreateStateHandler(c.states.MYGUESSMODE, {
         this.emit(':ask', prompt + p.prompts.helpText);
     },
     'TOOHIGH': function() {
+        if (typeof this.attributes['myGuess'] === 'undefined') {
+            this.emit(':ask', 'We\'re not in a game!  ' + p.prompts.helpText);
+            return;
+        }
         this.attributes['high'] = this.attributes['myGuess'];
         const guess = m.nextGuess(this.attributes['high'], this.attributes['low']);
         if (Number.isNaN(guess)) {
@@ -74,9 +78,13 @@ module.exports = Alexa.CreateStateHandler(c.states.MYGUESSMODE, {
         }
         this.attributes['myGuess'] = guess;
         this.attributes['lastPrompt'] = ['Is ' + this.attributes['myGuess'] + ' too high or too low?'];
-        this.emit(':ask', 'Is it ' + this.attributes['myGuess'] + '?', this.attributes['lastPrompt']);
+        this.emit(':ask', 'Is it ' + this.attributes['myGuess'] + '?', this.attributes['lastPrompt'][0]);
     },
     'TOOLOW': function() {
+        if (typeof this.attributes['myGuess'] === 'undefined') {
+            this.emit(':ask', 'We\'re not in a game!  ' + p.prompts.helpText);
+            return;
+        }
         this.attributes['low'] = this.attributes['myGuess'];
         const guess = m.nextGuess(this.attributes['high'], this.attributes['low']);
         if (Number.isNaN(guess)) {
@@ -87,13 +95,13 @@ module.exports = Alexa.CreateStateHandler(c.states.MYGUESSMODE, {
 
         this.attributes['myGuess'] = guess;
         this.attributes['lastPrompt'] = ['Is ' + this.attributes['myGuess'] + ' too high or too low?'];
-        this.emit(':ask', 'Is it ' + this.attributes['myGuess'] + '?', this.attributes['lastPrompt']);
+        this.emit(':ask', 'Is it ' + this.attributes['myGuess'] + '?', this.attributes['lastPrompt'][0]);
     },
     'STARTGAMEASGUESSER': function() {
-        this.attributes['startGameAsGuesser'] = 'pending';
         this.attributes['giveRange'] = undefined;
 
-        if (this.attributes['myGuess']) {
+        if (typeof this.attributes['myGuess'] !== 'undefined') {
+            this.attributes['startGameAsGuesser'] = 'pending';
             if (Array.isArray(this.attributes['lastPrompt'])) {
                 this.attributes['lastPrompt'].unshift(p.prompts.confirmStartOver);
             } else {
@@ -123,13 +131,13 @@ module.exports = Alexa.CreateStateHandler(c.states.MYGUESSMODE, {
          */
         this.attributes['newHigh'] = second;
         this.attributes['newLow'] = first;
-        this.attributes['giveRange'] = 'pending';
 
         /* If we were in the middle of a game, push the confirmation prompt onto
          * the stack so it can get popped off and the previous prompt restated if
          * the user says no.
          */
-        if (this.attributes['myGuess']) {
+        if (typeof this.attributes['myGuess'] !== 'undefined') {
+            this.attributes['giveRange'] = 'pending';
             if (Array.isArray(this.attributes['lastPrompt'])) {
                 this.attributes['lastPrompt'].unshift(p.prompts.confirmStartOver);
             } else {
@@ -166,7 +174,7 @@ module.exports = Alexa.CreateStateHandler(c.states.MYGUESSMODE, {
             return;
         }
 
-        if (this.attributes['myGuess']) {
+        if (typeof this.attributes['myGuess'] !== 'undefined') {
             this.emitWithState('CORRECTANSWER');
             return;
         }

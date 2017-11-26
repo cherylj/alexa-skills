@@ -12,6 +12,9 @@ const c = require('../lib/_constants');
 
 module.exports = Alexa.CreateStateHandler(c.states.USERGUESSMODE, {
     'MAKEAGUESS': function() {
+        if (typeof this.attributes['myNumber'] === 'undefined') {
+            this.emit(':ask', 'We\'re not in a game!  ' + p.prompts.helpText);
+        }
         var guess = parseInt(this.event.request.intent.slots.Guess.value);
         if(Number.isNaN(guess)) {
             this.emitWithState('Unhandled');
@@ -34,13 +37,13 @@ module.exports = Alexa.CreateStateHandler(c.states.USERGUESSMODE, {
         }
     },
     'STARTGAMEASGUESSER': function() {
-        this.attributes['startGameAsGuesser'] = 'pending';
         this.attributes['giveRange'] = undefined;
 
         if (this.attributes['myNumber']) {
             /* We are currently in a game, prompt for confirmation, but save off
              * the last prompt
              */
+            this.attributes['startGameAsGuesser'] = 'pending';
             if (Array.isArray(this.attributes['lastPrompt'])) {
                 this.attributes['lastPrompt'].unshift(p.prompts.confirmStartOver);
             } else {
@@ -70,13 +73,13 @@ module.exports = Alexa.CreateStateHandler(c.states.USERGUESSMODE, {
          */
         this.attributes['newHigh'] = second;
         this.attributes['newLow'] = first;
-        this.attributes['giveRange'] = 'pending';
 
         /* If we were in the middle of a game, push the confirmation prompt onto
          * the stack so it can get popped off and the previous prompt restated if
          * the user says no.
          */
         if (this.attributes['myNumber']) {
+            this.attributes['giveRange'] = 'pending';
             if (Array.isArray(this.attributes['lastPrompt'])) {
                 this.attributes['lastPrompt'].unshift(p.prompts.confirmStartOver);
             } else {
@@ -129,7 +132,7 @@ module.exports = Alexa.CreateStateHandler(c.states.USERGUESSMODE, {
             this.emit(':ask', 'Ok, ' + this.attributes['lastPrompt'][0]);
         } else {
             /* They're not saying no in response to a question we asked. */
-            this.emitWithState('AMAZON.HelpIntent');
+            this.emit(':ask', p.prompts.helpText);
         }
     },
     'Unhandled': function() {
