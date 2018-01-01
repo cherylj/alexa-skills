@@ -1,0 +1,21 @@
+{
+	"templates": [
+		{
+			"parts": ["If I were a superhero, my super power would probably be ", ".  What about you?"],
+			"substitutions": [
+				["stating the obvious", "<prosody rate=\"x-fast\">talking really fast</prosody>", "super strength"]
+			]
+		},
+		{
+			"parts": ["What's with the elephant in the room? Oh, I'm not supposed to talk about it? Oops."]
+		},
+		{
+			"parts": ["I ", " to wear ", " on my ", "."],
+			"substitutions": [
+				["love", "hate", "like", "want"],
+				["socks", "shoes", "hats", "underwear", "pants", "mittens"],
+				["head", "hands", "feet", "legs"]
+			]
+		}
+	]
+}
