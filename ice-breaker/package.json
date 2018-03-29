@@ -1,0 +1,27 @@
+{
+  "name": "ice-breaker",
+  "version": "1.0.0",
+  "description": "An interactive number guessing game",
+  "main": "index.js",
+  "scripts": {
+
+    "lint": "eslint . --cache --quiet",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cherylj/alexa-skills.git"
+  },
+  "author": "Cheryl Jennings",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/cherylj/alexa-skills/issues"
+  },
+  "homepage": "https://github.com/cherylj/alexa-skills#readme",
+  "dependencies": {
+    "alexa-sdk": "^1.0.20"
+  },
+  "devDependencies": {
+    "eslint": "^4.11.0"
+  }
+}
