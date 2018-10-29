@@ -1,7 +1,8 @@
 /* Copyright 2017 Cheryl Jennings */
 /* eslint-disable no-console */
+'use strict';
 
-var Alexa = require('alexa-sdk');
+const Alexa = require('ask-sdk-v1adapter');
 const u = require('../lib/_util');
 const s3 = require('../lib/_s3');
 
@@ -66,8 +67,9 @@ const addName = Alexa.CreateStateHandler(u.states.ADD_NAME, {
     // TODO add check for max entries
     'add': function() {
         const getJson = (json, err) => {
-            if (err) {
-                this.emit(':tell', 'Sorry, I\'m having problems accesing your account.  Please try again');
+            if (err != null) {
+                this.emit(':tell', 'Sorry, I\'m having problems accessing your account.  Please try again');
+                return;
             }
             this.attributes['json'] = json;
             this.handler.state = u.states.PROMPT_NAME;
@@ -85,6 +87,7 @@ const addName = Alexa.CreateStateHandler(u.states.ADD_NAME, {
         this.handler.state = u.states.PROMPT_NAME;
         if (this.attributes['getLastName']) {
             this.emit(':ask', _getOopsPrompt() + '  Try telling me your last name again.');
+            return;
         }
         this.emit(':ask', _getOopsPrompt() + '  Try telling me your name again.');
     }
@@ -92,6 +95,11 @@ const addName = Alexa.CreateStateHandler(u.states.ADD_NAME, {
 
 const promptName = Alexa.CreateStateHandler(u.states.PROMPT_NAME, {
     'blank': function() {
+        if (u.isHelpIntent(this.event.request.intent.slots.fact.value)) {
+            this.emitWithState('AMAZON.HelpIntent');
+            return;
+        }
+
         this.handler.state = u.states.CONFIRM_NAME;
         const utterance = this.event.request.intent.slots.fact.value;
 
@@ -104,14 +112,14 @@ const promptName = Alexa.CreateStateHandler(u.states.PROMPT_NAME, {
         this.emit(':ask', `I got that your name was ${utterance}.  Is that correct?`);
     },
     'AMAZON.HelpIntent': function() {
-        const helpStr = 'Say your name so I can create an entry for you.  Say cancel to cancel this entry.';
+        let helpStr = 'Say your name so I can create an entry for you.  Say cancel to cancel this entry.';
         if (this.attributes['getLastName']) {
             helpStr = 'Say your last name so I can create an entry for you with a unique name.  Say cancel to cancel this entry.';
         }
         this.emit(':ask', helpStr);
     },
     'Unhandled': function() {
-        const helpStr = 'Sorry, I didn\'t get that.  What\'s your name?';
+        let helpStr = 'Sorry, I didn\'t get that.  What\'s your name?';
         if (this.attributes['getLastName']) {
             helpStr = 'Sorry, I didn\'t get that.  What\'s your last name?';
         }
@@ -127,7 +135,8 @@ const promptName = Alexa.CreateStateHandler(u.states.PROMPT_NAME, {
 
 const confirmName = Alexa.CreateStateHandler(u.states.CONFIRM_NAME, {
     'blank': function() {
-        this.emit(':ask', `Sorry, I didn't get that.  Is your name ${this.attributes['name']}?`);
+        const utterance = this.event.request.intent.slots.fact.value;
+        this.emitWithState(u.getIntent(utterance));
     },
     'AMAZON.NoIntent': function() {
         this.handler.state = u.states.ADD_NAME;
@@ -148,18 +157,19 @@ const confirmName = Alexa.CreateStateHandler(u.states.CONFIRM_NAME, {
             this.attributes['getLastName'] = true;
             this.attributes['lastName'] = undefined;
             this.emit(':ask', `I already have a name of ${this.attributes['name']} in this game.  What's your last name?`);
+            return;
         }
         this.emitWithState(u.intents.ADD);
     },
     'AMAZON.HelpIntent': function() {
-        const helpStr = `If your name is ${this.attributes['name']}, say yes.  Otherwise you can say no and try again.  Say cancel to cancel this entry.`;
+        let helpStr = `If your name is ${this.attributes['name']}, say yes.  Otherwise you can say no and try again.  Say cancel to cancel this entry.`;
         if (this.attributes['getLastName']) {
-            helpStr = `If your last name is ${this.attributes['lastName']}, say yes.  Otherwise you can say no and try again.  Say cancel to cancel this entry.`
+            helpStr = `If your last name is ${this.attributes['lastName']}, say yes.  Otherwise you can say no and try again.  Say cancel to cancel this entry.`;
         }
         this.emit(':ask', helpStr);
     },
     'Unhandled': function() {
-        const helpStr = `Sorry, I didn't get that.  Is your name ${this.attributes['name']}?`;
+        let helpStr = `Sorry, I didn't get that.  Is your name ${this.attributes['name']}?`;
         if (this.attributes['getLastName']) {
             helpStr = `Sorry, I didn't get that.  Is your last name ${this.attributes['lastName']}?`;
         }
@@ -186,7 +196,11 @@ const addFact = Alexa.CreateStateHandler(u.states.ADD_FACT, {
 
 const promptFact = Alexa.CreateStateHandler(u.states.PROMPT_FACT, {
     'blank': function() {
-        // TODO check for help?
+        if (u.isHelpIntent(this.event.request.intent.slots.fact.value)) {
+            this.emitWithState('AMAZON.HelpIntent');
+            return;
+        }
+
         this.handler.state = u.states.CONFIRM_FACT;
         const utterance = this.event.request.intent.slots.fact.value;
         this.attributes['fact'] = utterance;
@@ -208,16 +222,18 @@ const promptFact = Alexa.CreateStateHandler(u.states.PROMPT_FACT, {
 
 const confirmFact = Alexa.CreateStateHandler(u.states.CONFIRM_FACT, {
     'blank': function() {
-        this.emit(':ask', `Sorry, I didn't get that.  Is your fact ${this.attributes['fact']}?`);
+        const utterance = this.event.request.intent.slots.fact.value;
+        this.emitWithState(u.getIntent(utterance));
     },
     'AMAZON.NoIntent': function() {
         this.handler.state = u.states.ADD_FACT;
         this.attributes['fact'] = undefined;
         this.emitWithState(u.intents.REPROMPT);
+        return;
     },
     'AMAZON.YesIntent': function() {
         const json = this.attributes['json'];
-        if (util.getRandomNumber(1) === 0) {
+        if (u.getRandomNumber(1) === 0) {
             json.entries.push( {
                 'name': this.attributes['name'],
                 'fact': this.attributes['fact']
@@ -228,11 +244,11 @@ const confirmFact = Alexa.CreateStateHandler(u.states.CONFIRM_FACT, {
                 'fact': this.attributes['fact']
             } );
         }
-        json.count++;
 
         const callback = (err) => {
             if(err) {
                 this.emit(':tell', 'Oops, I encountered an error trying to record your fact.  Please try again');
+                return;
             }
             this.emit(':tell', _getSuccessPrompt() + `  Your name is: ${this.attributes['name']} and your fact was: ${this.attributes['fact']}`);
         };
@@ -240,7 +256,7 @@ const confirmFact = Alexa.CreateStateHandler(u.states.CONFIRM_FACT, {
         return s3.updateObject(this.event.context.System.user.userId, json, callback.bind(this));
     },
     'AMAZON.HelpIntent': function() {
-        this.emit(':ask', 'you asked for help');
+        this.emit(':ask', `If I have your fact correct, say yes.  Otherwise, say no and you can restate it.  I got that your fact was: ${this.attributes['fact']}`);
     },
     'Unhandled': function() {
         this.emit(':ask', 'Sorry, I didn\'t get that.  What\'s your fact?');

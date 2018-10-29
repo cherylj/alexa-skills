@@ -13,7 +13,9 @@ const states = {
     START_GAME: 'startGame',
     CONFIRM_START: 'confirmStart',
     CONFIRM_DELETE: 'confirmDelete',
-    NO_STATE: 'noState'
+    PLAY_GAME: 'playGame',
+    NO_STATE: 'noState',
+    HELP_ME: 'help'
 };
 
 const intents = {
@@ -21,30 +23,40 @@ const intents = {
     DELETE: 'delete',
     ADD: 'add',
     PLAY: 'play',
+    PLAY_LAST: 'playLast',
     YES: 'AMAZON.YesIntent',
     NO: 'AMAZON.NoIntent',
     HELP: 'AMAZON.HelpIntent',
+    FULL_HELP: 'fullHelp',
     REPROMPT: 'reprompt', // not actually used by user.
-    REPROMPT_FOR_LAST: 'get_last', // not actually used by user.
     UNDEFINED: 'Unhandled'
 };
 
 const intentMap = [
-    [intents.START_NEW, ['start new', 'new ice breaker', 'start new ice breaker', 'start new game']],
-    [intents.DELETE, ['remove ice breaker', 'delete ice breaker']],
+    [intents.START_NEW, ['start new', 'start over', 'start again', 'restart', 'start a new game', 'start new game']],
+    [intents.DELETE, ['remove game', 'delete game', 'remove my game', 'remove the game', 'delete my game', 'remove my game']],
     [intents.ADD, ['add fact', 'add a fact', 'add new fact', 'add a new fact',
         'add person', 'add a person', 'add entry', 'add an entry', 'add new entry', 'add a new entry']],
-    [intents.PLAY, ['give me a fact', 'next fact']],
+    [intents.PLAY, ['give me a fact', 'next fact', 'play', 'play next', 'play game', 'play the game']],
+    [intents.PLAY_LAST, ['what was the last fact', 'last fact', 'say it again']],
     [intents.YES, ['yes', 'yeah', 'correct', 'that\'s correct', 'that\'s right']],
-    [intents.NO, ['no', 'nope', 'that\'s not right', 'incorrect'],
-    [intents.HELP, ['help', 'help me']]]
+    [intents.NO, ['no', 'nope', 'that\'s not right', 'incorrect']],
+    [intents.FULL_HELP, ['full help']],
+    [intents.HELP, ['help', 'help me']]
 ];
+
+const isHelpIntent = (phrase) => {
+    return (getIntent(phrase) === intents.HELP);
+};
 
 const intentToStateMap = new Map([
     [intents.ADD, states.ADD_NAME],
     [intents.DELETE, states.START_GAME],
     [intents.START_NEW, states.START_GAME],
-    [intents.PLAY, states.PLAY]
+    [intents.PLAY, states.PLAY_GAME],
+    [intents.PLAY_LAST, states.PLAY_GAME],
+    [intents.HELP, states.HELP_ME],
+    [intents.FULL_HELP, states.HELP_ME]
 ]);
 
 const getStateForIntent = (intent) => {
@@ -67,6 +79,6 @@ const getIntent = (phrase) => {
 
 const getRandomNumber = (max) => {
     return Math.floor((Math.random() * Date.now() & 0xFF) % max);
-}
+};
 
-module.exports = { states, intents, getIntent, getStateForIntent, getRandomNumber };
+module.exports = { states, intents, getIntent, getStateForIntent, getRandomNumber, isHelpIntent };

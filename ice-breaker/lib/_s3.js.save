@@ -15,11 +15,7 @@ const getGameInfo = (userId, createNew, func) => {
     return s3promise.then((data) => {
         func(JSON.parse(data.Body.toString()));
     }, (err) => {
-        if (err.code === 'NoSuchKey' || err.code === 'AccessDenied' || err.code === 'NotFound') {
-            if (!createNew) {
-                return func(null, null);
-            }
-
+        if (createNew && (err.code === 'NoSuchKey' || err.code === 'AccessDenied' || err.code === 'NotFound')) {
             const readAfterCreate = (err) => {
                 if (err) {
                     return func(null, err);

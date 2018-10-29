@@ -1,4 +1,5 @@
 /* Copyright 2017 Cheryl Jennings */
+/* eslint-disable no-console, no-unused-vars */
 'use strict';
 
 const util = require('./lib/_util');
@@ -24,11 +25,11 @@ const createCallback = (err) => {
 
 const checkExistsCallback = (obj, err) => {
     if (err) {
-        if (err.code === 'NoSuchKey' || err.code === 'AccessDenied') {
+        if (err.code === 'NoSuchKey' || err.code === 'NotFound') {
             // Doesn't exist already, go ahead and create!
             return s3.createNewGame('abc', false, createCallback);
         }
-        console.log(`Sorry, encountered an error: ${err.message}`);
+        console.log(`Sorry, encountered an error: ${err}`);
     }
 
     const count = obj.count;
@@ -39,6 +40,10 @@ const checkExistsCallback = (obj, err) => {
     console.log(`You currently have a game with ${count} entries.  Do you want to delete it and start a new game?`);
 };
 //s3.getGameInfo('abc', true, checkExistsCallback);
-console.log(util.getRandomNumber(100));
+//console.log(util.getRandomNumber(100));
 // s3.getGameInfo('abc', callback); // eslint-disable-line no-console
 //s3.createNewGame('abc', true, callback); // eslint-disable-line no-console
+
+console.log('------- after get info ----------');
+console.log(util.intents.FULL_HELP);
+//console.log(`intent was: ${intent} and state is: ${util.getStateForIntent(intent)}`);

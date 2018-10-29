@@ -4,7 +4,6 @@
   "description": "An interactive number guessing game",
   "main": "index.js",
   "scripts": {
-
     "lint": "eslint . --cache --quiet",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,7 +18,9 @@
   },
   "homepage": "https://github.com/cherylj/alexa-skills#readme",
   "dependencies": {
-    "alexa-sdk": "^1.0.20"
+    "alexa-sdk": "^1.0.20",
+    "ask-sdk": "^2.1.0",
+    "ask-sdk-v1adapter": "^2.1.0"
   },
   "devDependencies": {
     "eslint": "^4.11.0"
